@@ -7,8 +7,13 @@ export default defineConfig({
   plugins: [react()],
   base: './', // Use relative paths for GitHub Pages
   build: {
-    outDir: '../dist', // Output to top level dist folder
+    outDir: '../gh-pages', // Output to gh-pages folder
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+      },
+    },
   },
   resolve: {
     alias: {
