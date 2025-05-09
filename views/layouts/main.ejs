@@ -34,7 +34,12 @@
     </header>
 
     <main class="flex-grow container mx-auto py-6 px-4">
-        <%- body %>
+        <% if (typeof body === 'string') { %>
+            <%- body %>
+        <% } else { %>
+            <!-- Conteúdo será renderizado aqui -->
+            <p class="text-center text-gray-500">Nenhum conteúdo disponível</p>
+        <% } %>
     </main>
 
     <footer class="bg-white border-t border-gray-200 py-4">
