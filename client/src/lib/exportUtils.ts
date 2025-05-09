@@ -154,7 +154,7 @@ export async function exportToDOCX(template: Template): Promise<void> {
 }
 
 // Helper function to convert CSS text-align to DOCX alignment
-function convertTextAlign(textAlign?: string): AlignmentType {
+function convertTextAlign(textAlign?: string): typeof AlignmentType[keyof typeof AlignmentType] {
   switch (textAlign) {
     case 'left':
       return AlignmentType.LEFT;
