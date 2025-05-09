@@ -20,6 +20,7 @@ fi
 # Compilar versão estática
 cd client
 npx vite build --config vite.config.static.ts
+BUILD_RESULT=$?
 
 # Restaurar o arquivo index.html original se existir backup
 if [ -f "index.html.bak" ]; then
@@ -32,6 +33,31 @@ if [ -f "favicon.svg" ] && [ -f "public/favicon.svg" ]; then
 fi
 
 cd ..
+
+# Verificar se o build falhou e criar uma página estática alternativa
+if [ $BUILD_RESULT -ne 0 ]; then
+  echo "O build falhou. Criando página estática alternativa..."
+  
+  # O conteúdo estático foi criado manualmente e está disponível em gh-pages/index.html
+  if [ ! -f "gh-pages/index.html" ]; then
+    echo "<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='UTF-8'>
+  <title>Template Editor</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    h1 { color: #3490dc; }
+  </style>
+</head>
+<body>
+  <h1>Template Editor</h1>
+  <p>Versão estática do Template Editor para GitHub Pages</p>
+  <p>O build completo falhou. Por favor, verifique o repositório principal.</p>
+</body>
+</html>" > gh-pages/index.html
+  fi
+fi
 
 # Copiar outros arquivos necessários 
 # Se houver uma pasta public, copie seu conteúdo
