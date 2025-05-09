@@ -1,32 +1,25 @@
-import { Switch, Route } from "wouter";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
-import TemplateEditor from "@/pages/TemplateEditor";
-
-// Create a client
-const queryClient = new QueryClient();
+import { useEffect, useState } from 'react';
+import TemplateEditor from './pages/TemplateEditor';
 
 function Router() {
-  return (
-    <Switch>
-      <Route path="/" component={TemplateEditor} />
-      <Route path="/editor" component={TemplateEditor} />
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
-  );
+  const [path] = useState('/');
+  
+  if (path === '/') {
+    return <TemplateEditor />;
+  }
+  
+  return <div>Página não encontrada</div>;
 }
 
 function App() {
+  useEffect(() => {
+    document.title = 'Template Editor';
+  }, []);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <div className="app">
+      <Router />
+    </div>
   );
 }
 

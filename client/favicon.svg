@@ -1,0 +1,9 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="20" fill="#3490dc"/>
+  <path d="M30 25H70C75 25 80 30 80 35V65C80 70 75 75 70 75H30C25 75 20 70 20 65V35C20 30 25 25 30 25Z" fill="white" stroke="#3490dc" stroke-width="2"/>
+  <path d="M35 40H65" stroke="#3490dc" stroke-width="3" stroke-linecap="round"/>
+  <path d="M35 50H55" stroke="#3490dc" stroke-width="3" stroke-linecap="round"/>
+  <path d="M35 60H60" stroke="#3490dc" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="75" cy="75" r="15" fill="#ef4444"/>
+  <text x="75" y="80" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="16" fill="white">T</text>
+</svg>
