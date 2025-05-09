@@ -37,10 +37,17 @@ export async function exportToPDF(template: Template): Promise<void> {
   const orientation = width > height ? 'landscape' : 'portrait';
   const size = PAGE_SIZES[template.pageSize] || PAGE_SIZES.a4;
   
-  // Create PDF with proper dimensions
+  // Create PDF with proper dimensions - normalize unit and orientation to acceptable values
+  const pdfUnit = (size.unit === 'mm' || size.unit === 'in' || size.unit === 'pt' || 
+               size.unit === 'px' || size.unit === 'cm' || size.unit === 'ex' || 
+               size.unit === 'em' || size.unit === 'pc') ? size.unit : 'mm';
+               
+  const pdfOrientation = (orientation === 'landscape' || orientation === 'portrait') ? 
+                      orientation as 'landscape' | 'portrait' : 'portrait';
+  
   const pdf = new jsPDF({
-    orientation,
-    unit: size.unit,
+    orientation: pdfOrientation,
+    unit: pdfUnit,
     format: [size.width, size.height]
   });
   
@@ -111,19 +118,11 @@ export async function exportToDOCX(template: Template): Promise<void> {
     sections: [
       {
         properties: {},
-        children: [
-          // Add all variables as paragraphs
-          ...template.variables.map(variable => {
-            // Create paragraph with proper alignment
-            const paragraph = new Paragraph({
-              text: variable.value,
-              alignment: convertTextAlign(variable.format.textAlign),
-              // We can't directly position elements with x,y in DOCX
-              // Instead we use paragraph properties like alignment, spacing, etc.
-            });
-            
-            // Apply text formatting
-            paragraph.root.push(
+        children: template.variables.map(variable => {
+          // Create paragraph with proper alignment
+          const paragraph = new Paragraph({
+            alignment: convertTextAlign(variable.format.textAlign),
+            children: [
               new TextRun({
                 text: variable.value,
                 font: variable.format.fontFamily,
@@ -133,11 +132,16 @@ export async function exportToDOCX(template: Template): Promise<void> {
                 italics: variable.format.fontStyle === 'italic',
                 underline: variable.format.textDecoration === 'underline' ? {} : undefined,
               })
-            );
-            
-            return paragraph;
-          })
-        ],
+            ],
+            // Use spacing to approximate the positioning
+            spacing: {
+              before: variable.y * 2,
+              after: 0
+            }
+          });
+          
+          return paragraph;
+        }),
       },
     ],
   });

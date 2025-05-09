@@ -6,9 +6,11 @@ import MainEditor from '@/components/MainEditor';
 import VariableModal from '@/components/VariableModal';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
-import { createNewTemplate, saveTemplateToLocal, getTemplatesFromLocal } from '@/lib/storageUtils';
+import { createNewTemplate, saveTemplateToLocal, getTemplatesFromLocal, serializeTemplate } from '@/lib/storageUtils';
 import { exportToPDF, exportToDOCX } from '@/lib/exportUtils';
+import { importFileContent } from '@/lib/importUtils';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { saveAs } from 'file-saver';
 
 const TemplateEditor = () => {
   const { toast } = useToast();
@@ -20,6 +22,8 @@ const TemplateEditor = () => {
   const [initialPosition, setInitialPosition] = useState({ x: 100, y: 100 });
   const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const wordInputRef = useRef<HTMLInputElement>(null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
 
   // Variable handling functions
   const handleSelectVariable = (id: string) => {
@@ -149,6 +153,18 @@ const TemplateEditor = () => {
     }
   };
 
+  const handleUploadWordDocument = () => {
+    if (wordInputRef.current) {
+      wordInputRef.current.click();
+    }
+  };
+
+  const handleUploadPdfDocument = () => {
+    if (pdfInputRef.current) {
+      pdfInputRef.current.click();
+    }
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -157,12 +173,97 @@ const TemplateEditor = () => {
     reader.onload = (event) => {
       const backgroundImage = event.target?.result as string;
       setTemplate(prev => ({ ...prev, backgroundImage }));
+      
+      toast({
+        title: "Background uploaded",
+        description: "Background image has been added to the template.",
+      });
     };
     reader.readAsDataURL(file);
 
     // Reset the input so the same file can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+  
+  const handleWordFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    try {
+      const result = await importFileContent(file);
+      
+      if (result.type === 'text') {
+        // Create a variable with the imported text
+        const newVariable = {
+          id: uuidv4(),
+          title: file.name.replace(/\.[^/.]+$/, ""), // Remove file extension
+          value: result.content,
+          x: 50,
+          y: 50,
+          format: { ...DEFAULT_VARIABLE_FORMAT }
+        };
+        
+        setTemplate(prev => ({
+          ...prev,
+          variables: [...prev.variables, newVariable]
+        }));
+        
+        toast({
+          title: "Word document imported",
+          description: "Content has been imported as a new variable.",
+        });
+      } else if (result.type === 'image') {
+        setTemplate(prev => ({ ...prev, backgroundImage: result.content }));
+        
+        toast({
+          title: "Word document imported",
+          description: "Document has been imported as a background image.",
+        });
+      }
+    } catch (error) {
+      console.error("Word import error:", error);
+      toast({
+        title: "Import failed",
+        description: "Failed to import Word document. Please try again.",
+        variant: "destructive",
+      });
+    }
+    
+    // Reset the input
+    if (wordInputRef.current) {
+      wordInputRef.current.value = '';
+    }
+  };
+  
+  const handlePdfFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    try {
+      const result = await importFileContent(file);
+      
+      if (result.type === 'image') {
+        setTemplate(prev => ({ ...prev, backgroundImage: result.content }));
+        
+        toast({
+          title: "PDF imported",
+          description: "The first page of the PDF has been imported as a background image.",
+        });
+      }
+    } catch (error) {
+      console.error("PDF import error:", error);
+      toast({
+        title: "Import failed",
+        description: "Failed to import PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
+    
+    // Reset the input
+    if (pdfInputRef.current) {
+      pdfInputRef.current.value = '';
     }
   };
 
@@ -227,6 +328,26 @@ const TemplateEditor = () => {
       });
     }
   };
+  
+  const handleExportJSON = () => {
+    try {
+      const jsonContent = serializeTemplate(template);
+      const blob = new Blob([jsonContent], { type: 'application/json' });
+      saveAs(blob, `${template.title || 'template'}.json`);
+      
+      toast({
+        title: "JSON exported",
+        description: "Your template has been exported as a JSON file.",
+      });
+    } catch (error) {
+      console.error("JSON export error:", error);
+      toast({
+        title: "Export failed",
+        description: "Failed to export JSON. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-gray-100 text-gray-800">
@@ -253,6 +374,9 @@ const TemplateEditor = () => {
           onBackgroundToggle={handleBackgroundToggle}
           onPageSizeChange={handlePageSizeChange}
           onUploadBackground={handleUploadBackground}
+          onUploadWordDocument={handleUploadWordDocument}
+          onUploadPdfDocument={handleUploadPdfDocument}
+          onExportJSON={handleExportJSON}
         />
 
         {/* Main Editor */}
@@ -277,13 +401,29 @@ const TemplateEditor = () => {
         initialPosition={initialPosition}
       />
 
-      {/* Hidden file input for background upload */}
+      {/* Hidden file inputs */}
       <input
         type="file"
         ref={fileInputRef}
         style={{ display: 'none' }}
         onChange={handleFileChange}
         accept="image/*"
+      />
+      
+      <input
+        type="file"
+        ref={wordInputRef}
+        style={{ display: 'none' }}
+        onChange={handleWordFileChange}
+        accept=".docx,.doc"
+      />
+      
+      <input
+        type="file"
+        ref={pdfInputRef}
+        style={{ display: 'none' }}
+        onChange={handlePdfFileChange}
+        accept=".pdf"
       />
 
       {/* Clear Variables Confirmation */}

@@ -4,7 +4,18 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Pencil, Trash, Plus, Image, FileUp } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Pencil, 
+  Trash, 
+  Plus, 
+  Image, 
+  FileUp, 
+  FileText, 
+  File, 
+  Download,
+  FileType
+} from 'lucide-react';
 
 interface SidebarProps {
   template: Template;
@@ -17,6 +28,9 @@ interface SidebarProps {
   onBackgroundToggle: (show: boolean) => void;
   onPageSizeChange: (size: string) => void;
   onUploadBackground: () => void;
+  onUploadWordDocument: () => void;
+  onUploadPdfDocument: () => void;
+  onExportJSON: () => void;
 }
 
 const Sidebar = ({
@@ -29,7 +43,10 @@ const Sidebar = ({
   onClearVariables,
   onBackgroundToggle,
   onPageSizeChange,
-  onUploadBackground
+  onUploadBackground,
+  onUploadWordDocument,
+  onUploadPdfDocument,
+  onExportJSON
 }: SidebarProps) => {
   const { variables, showBackgroundInOutput, pageSize } = template;
 
@@ -113,7 +130,7 @@ const Sidebar = ({
                   fontWeight: variable.format.fontWeight || 'normal',
                   fontStyle: variable.format.fontStyle || 'normal',
                   textDecoration: variable.format.textDecoration || 'none',
-                  textAlign: variable.format.textAlign || 'left',
+                  textAlign: variable.format.textAlign || 'left' as any,
                   color: variable.format.color
                 }}
               >
@@ -127,45 +144,91 @@ const Sidebar = ({
           ))
         )}
       </div>
-
-      <div className="border-t border-gray-200 p-3 bg-gray-50">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-gray-700">Background Image</span>
-          <div className="flex items-center">
-            <span className="text-xs text-gray-500 mr-2">Show in output</span>
-            <Switch
-              checked={showBackgroundInOutput}
-              onCheckedChange={onBackgroundToggle}
-            />
+      
+      <Tabs defaultValue="background" className="border-t border-gray-200 bg-gray-50">
+        <TabsList className="w-full justify-start bg-transparent border-b rounded-none p-0">
+          <TabsTrigger value="background" className="rounded-none data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none">
+            Background
+          </TabsTrigger>
+          <TabsTrigger value="import" className="rounded-none data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none">
+            Import
+          </TabsTrigger>
+          <TabsTrigger value="export" className="rounded-none data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none">
+            Export
+          </TabsTrigger>
+        </TabsList>
+        
+        {/* Background Tab */}
+        <TabsContent value="background" className="p-3 mt-0">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-gray-700">Background Image</span>
+            <div className="flex items-center">
+              <span className="text-xs text-gray-500 mr-2">Show in output</span>
+              <Switch
+                checked={showBackgroundInOutput}
+                onCheckedChange={onBackgroundToggle}
+              />
+            </div>
           </div>
-        </div>
-        <Button 
-          variant="outline" 
-          className="w-full flex items-center"
-          onClick={onUploadBackground}
-        >
-          <Image className="mr-2 h-4 w-4" /> Upload Background
-        </Button>
-      </div>
-
-      <div className="border-t border-gray-200 p-3 bg-gray-50">
-        <Label className="block text-sm font-medium text-gray-700 mb-2">Page Size</Label>
-        <Select 
-          defaultValue={pageSize} 
-          value={pageSize}
-          onValueChange={onPageSizeChange}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select page size" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(PAGE_SIZES).map(([key, size]) => (
-              <SelectItem key={key} value={key}>{size.label}</SelectItem>
-            ))}
-            <SelectItem value="custom">Custom Size</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+          <Button 
+            variant="outline" 
+            className="w-full flex items-center mb-3"
+            onClick={onUploadBackground}
+          >
+            <Image className="mr-2 h-4 w-4" /> Upload Image
+          </Button>
+          
+          <Label className="block text-sm font-medium text-gray-700 mb-2">Page Size</Label>
+          <Select 
+            defaultValue={pageSize} 
+            value={pageSize}
+            onValueChange={onPageSizeChange}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select page size" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(PAGE_SIZES).map(([key, size]) => (
+                <SelectItem key={key} value={key}>{size.label}</SelectItem>
+              ))}
+              <SelectItem value="custom">Custom Size</SelectItem>
+            </SelectContent>
+          </Select>
+        </TabsContent>
+        
+        {/* Import Tab */}
+        <TabsContent value="import" className="p-3 mt-0">
+          <div className="space-y-3">
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center"
+              onClick={onUploadWordDocument}
+            >
+              <FileText className="mr-2 h-4 w-4" /> Import Word Document
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center"
+              onClick={onUploadPdfDocument}
+            >
+              <File className="mr-2 h-4 w-4" /> Import PDF Document
+            </Button>
+          </div>
+        </TabsContent>
+        
+        {/* Export Tab */}
+        <TabsContent value="export" className="p-3 mt-0">
+          <div className="space-y-3">
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center"
+              onClick={onExportJSON}
+            >
+              <Download className="mr-2 h-4 w-4" /> Export Template as JSON
+            </Button>
+          </div>
+        </TabsContent>
+      </Tabs>
     </aside>
   );
 };
