@@ -4,15 +4,33 @@
 mkdir -p gh-pages
 
 # Preparação para a build estática
-cp client/index.static.html client/index.html.bak
-cp client/index.static.html client/index.html
+if [ -f "client/index.html" ]; then
+  cp client/index.html client/index.html.bak
+fi
+
+if [ -f "client/index.static.html" ]; then
+  cp client/index.static.html client/index.html
+fi
+
+# Copiar também o arquivo favicon.svg para a pasta client se existir
+if [ -f "client/public/favicon.svg" ]; then
+  cp client/public/favicon.svg client/
+fi
 
 # Compilar versão estática
 cd client
 npx vite build --config vite.config.static.ts
 
-# Restaurar o arquivo index.html original
-mv index.html.bak index.html
+# Restaurar o arquivo index.html original se existir backup
+if [ -f "index.html.bak" ]; then
+  mv index.html.bak index.html
+fi
+
+# Remover favicon.svg temporário se foi copiado
+if [ -f "favicon.svg" ] && [ -f "public/favicon.svg" ]; then
+  rm favicon.svg
+fi
+
 cd ..
 
 # Copiar outros arquivos necessários 
