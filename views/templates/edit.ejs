@@ -1,0 +1,339 @@
+<div class="h-full flex flex-col">
+    <!-- Editor Header -->
+    <div class="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between shadow-sm">
+        <div class="flex items-center space-x-3">
+            <input type="text" id="template-title" class="text-lg font-semibold border-0 focus:ring-2 focus:ring-blue-500 px-2 py-1 rounded w-80" placeholder="Título do documento" value="<%= template.title %>">
+        </div>
+        <div class="flex items-center space-x-2">
+            <button id="save-template-btn" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                Salvar
+            </button>
+            <button id="load-template-btn" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+                Carregar
+            </button>
+            
+            <div class="border-l border-gray-300 h-6 mx-2"></div>
+            
+            <div class="dropdown relative">
+                <button id="export-dropdown-btn" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    Exportar
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="export-dropdown" class="dropdown-menu hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 z-10">
+                    <button id="export-pdf-btn" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        Exportar como PDF
+                    </button>
+                    <button id="export-docx-btn" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        Exportar como DOCX
+                    </button>
+                    <button id="export-json-btn" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                        Exportar como JSON
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formatting Toolbar -->
+    <div id="format-toolbar" class="bg-white border-b border-gray-200 px-4 py-2 flex flex-wrap items-center space-x-4 hidden">
+        <div class="flex items-center space-x-2">
+            <select id="font-family" class="rounded-md border-gray-300 py-1 text-sm">
+                <option value="Arial">Arial</option>
+                <option value="Helvetica">Helvetica</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Courier New">Courier New</option>
+            </select>
+            <select id="font-size" class="w-16 rounded-md border-gray-300 py-1 text-sm">
+                <% [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 28, 32].forEach(function(size) { %>
+                    <option value="<%= size %>"><%= size %></option>
+                <% }); %>
+            </select>
+            <input type="color" id="text-color" class="w-8 h-8 p-0 border-0 rounded" value="#000000">
+        </div>
+
+        <div class="flex items-center space-x-1">
+            <button id="bold-button" class="w-8 h-8 rounded flex items-center justify-center hover:bg-gray-100" title="Negrito">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </button>
+            <button id="italic-button" class="w-8 h-8 rounded flex items-center justify-center hover:bg-gray-100" title="Itálico">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+            </button>
+            <button id="underline-button" class="w-8 h-8 rounded flex items-center justify-center hover:bg-gray-100" title="Sublinhado">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 9h16M4 15h16" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex items-center space-x-1">
+            <button id="align-left" class="w-8 h-8 rounded flex items-center justify-center hover:bg-gray-100 active" title="Alinhar à Esquerda">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h16" />
+                </svg>
+            </button>
+            <button id="align-center" class="w-8 h-8 rounded flex items-center justify-center hover:bg-gray-100" title="Centralizar">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M8 12h8M4 18h16" />
+                </svg>
+            </button>
+            <button id="align-right" class="w-8 h-8 rounded flex items-center justify-center hover:bg-gray-100" title="Alinhar à Direita">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M4 18h16" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex items-center ml-auto">
+            <button id="save-formatting-btn" class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Salvar
+            </button>
+            <button id="cancel-formatting-btn" class="ml-2 px-3 py-1.5 bg-gray-200 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+    <!-- Grid Controls -->
+    <div class="bg-white border-b border-gray-200 px-4 py-2 flex items-center space-x-4">
+        <div class="flex items-center space-x-2">
+            <input type="checkbox" id="show-grid" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
+            <label for="show-grid" class="text-sm font-medium text-gray-700">Mostrar Grade</label>
+        </div>
+        <div class="flex items-center space-x-2">
+            <input type="checkbox" id="enable-snap" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
+            <label for="enable-snap" class="text-sm font-medium text-gray-700">Snap para Grade</label>
+        </div>
+        <div id="mouse-position" class="ml-auto text-sm text-gray-500">X: 0, Y: 0</div>
+    </div>
+
+    <!-- Main Editor Area -->
+    <div class="flex-1 flex overflow-hidden">
+        <!-- Sidebar -->
+        <div class="w-72 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
+            <div class="p-4">
+                <div class="mb-4">
+                    <label for="page-size" class="block text-sm font-medium text-gray-700 mb-1">Tamanho da Página</label>
+                    <select id="page-size" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="a4" <%= template.pageSize === 'a4' ? 'selected' : '' %>>A4 (210 × 297 mm)</option>
+                        <option value="letter" <%= template.pageSize === 'letter' ? 'selected' : '' %>>Letter (8.5 × 11 in)</option>
+                        <option value="legal" <%= template.pageSize === 'legal' ? 'selected' : '' %>>Legal (8.5 × 14 in)</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium text-gray-700">Imagem de Fundo</label>
+                        <div class="flex items-center">
+                            <span class="text-xs text-gray-500 mr-1">Mostrar na saída</span>
+                            <input type="checkbox" id="show-background" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" <%= template.showBackgroundInOutput ? 'checked' : '' %>>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <button id="upload-background-btn" class="w-full text-left flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Carregar Imagem
+                    </button>
+                    <button id="upload-pdf-btn" class="w-full text-left flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Importar PDF
+                    </button>
+                    <button id="upload-word-btn" class="w-full text-left flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Importar Word
+                    </button>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-medium text-gray-800">Variáveis</h3>
+                    <button id="add-variable-btn" class="text-blue-600 hover:text-blue-800 p-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="variables-list" class="mt-2 max-h-80 overflow-y-auto">
+                    <% if (template.variables && template.variables.length > 0) { %>
+                        <% template.variables.forEach(function(variable) { %>
+                            <div class="variable-item p-3 mb-2 rounded border transition-colors bg-gray-50 border-gray-200 hover:border-gray-300" data-id="<%= variable.id %>">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-medium text-sm text-gray-700"><%= variable.title %></h3>
+                                    <div class="flex space-x-1">
+                                        <button class="edit-btn h-6 w-6 p-0 text-gray-500 hover:text-blue-500" data-id="<%= variable.id %>">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                            </svg>
+                                        </button>
+                                        <button class="delete-btn h-6 w-6 p-0 text-gray-500 hover:text-red-500" data-id="<%= variable.id %>">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="text-sm border-l-2 border-blue-500 pl-2 mb-2" style="
+                                    font-family: <%= variable.format.fontFamily %>;
+                                    font-size: <%= variable.format.fontSize %>px;
+                                    font-weight: <%= variable.format.fontWeight || 'normal' %>;
+                                    font-style: <%= variable.format.fontStyle || 'normal' %>;
+                                    text-decoration: <%= variable.format.textDecoration || 'none' %>;
+                                    text-align: <%= variable.format.textAlign || 'left' %>;
+                                    color: <%= variable.format.color %>;
+                                ">
+                                    <%= variable.value %>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500">
+                                    <span>X: <%= variable.x %></span>
+                                    <span>Y: <%= variable.y %></span>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="p-4 text-center text-sm text-gray-500">
+                            Nenhuma variável adicionada. Clique no botão + para adicionar.
+                        </div>
+                    <% } %>
+                </div>
+                <button id="clear-variables-btn" class="mt-4 w-full flex items-center justify-center px-3 py-2 border border-red-300 rounded-md shadow-sm text-sm text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" <%= template.variables && template.variables.length > 0 ? '' : 'disabled' %>>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Limpar Variáveis
+                </button>
+            </div>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="flex-1 bg-gray-300 overflow-auto p-8">
+            <div id="editor-canvas" class="editor-canvas relative bg-white shadow-lg mx-auto" style="width: 794px; height: 1123px; background-image: <%= template.backgroundImage ? `url('${template.backgroundImage}')` : 'none' %>; background-size: contain; background-repeat: no-repeat; background-position: center;">
+                <% if (template.variables && template.variables.length > 0) { %>
+                    <% template.variables.forEach(function(variable) { %>
+                        <div class="variable-element" data-id="<%= variable.id %>" style="
+                            left: <%= variable.x %>px;
+                            top: <%= variable.y %>px;
+                            font-family: <%= variable.format.fontFamily %>;
+                            font-size: <%= variable.format.fontSize %>px;
+                            font-weight: <%= variable.format.fontWeight || 'normal' %>;
+                            font-style: <%= variable.format.fontStyle || 'normal' %>;
+                            text-decoration: <%= variable.format.textDecoration || 'none' %>;
+                            text-align: <%= variable.format.textAlign || 'left' %>;
+                            color: <%= variable.format.color %>;
+                        ">
+                            <%= variable.value %>
+                        </div>
+                    <% }); %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="bg-gray-100 border-t border-gray-200 px-4 py-1.5 text-sm text-gray-600 flex justify-between items-center">
+        <span>
+            <% 
+                const pageSize = {
+                    a4: { name: 'A4', width: 210, height: 297, unit: 'mm' },
+                    letter: { name: 'Letter', width: 8.5, height: 11, unit: 'in' },
+                    legal: { name: 'Legal', width: 8.5, height: 14, unit: 'in' }
+                }[template.pageSize] || { name: 'A4', width: 210, height: 297, unit: 'mm' };
+            %>
+            Tamanho do Canvas: <%= pageSize.name %> (<%= pageSize.width %><%= pageSize.unit %> × <%= pageSize.height %><%= pageSize.unit %>)
+        </span>
+        <span><%= template.variables ? template.variables.length : 0 %> variável(eis)</span>
+    </div>
+
+    <!-- Variable Modal -->
+    <div id="variable-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800" id="variable-modal-title">Adicionar Variável</h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label for="variable-title" class="block text-sm font-medium text-gray-700 mb-1">Título da Variável</label>
+                        <input type="text" id="variable-title" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="ex: Nome do Cliente">
+                    </div>
+                    <div>
+                        <label for="variable-value" class="block text-sm font-medium text-gray-700 mb-1">Valor da Variável</label>
+                        <input type="text" id="variable-value" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="ex: João Silva">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="variable-x" class="block text-sm font-medium text-gray-700 mb-1">Posição X</label>
+                            <input type="number" id="variable-x" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" min="0">
+                        </div>
+                        <div>
+                            <label for="variable-y" class="block text-sm font-medium text-gray-700 mb-1">Posição Y</label>
+                            <input type="number" id="variable-y" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" min="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-2">
+                <button id="cancel-variable-btn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    Cancelar
+                </button>
+                <button id="save-variable-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Salvar Variável
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file inputs -->
+    <input type="file" id="upload-background-input" class="hidden" accept="image/*">
+    <input type="file" id="upload-word-input" class="hidden" accept=".docx,.doc">
+    <input type="file" id="upload-pdf-input" class="hidden" accept=".pdf">
+
+    <script>
+        // Initialize the editor with template data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create template object from server data
+            const template = <%- JSON.stringify(template) %>;
+            
+            // Set this variable in the window object to be used by main.js
+            window.initialTemplate = template;
+        });
+    </script>
+</div>
